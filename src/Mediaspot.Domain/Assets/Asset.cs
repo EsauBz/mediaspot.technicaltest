@@ -28,6 +28,8 @@ public sealed class Asset : AggregateRoot
         var mf = new MediaFile(MediaFileId.New(), path, duration);
         _mediaFiles.Add(mf);
         Raise(new MediaFileRegistered(Id, mf.Id.Value));
+        string defaultPreset = "1080p_default";
+        Raise(new TranscodeRequested(Id, mf.Id.Value, defaultPreset));
         return mf;
     }
 

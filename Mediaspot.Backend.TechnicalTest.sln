@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mediaspot.UnitTests", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mediaspot.Api", "src\Mediaspot.Api\Mediaspot.Api.csproj", "{6D4A091F-C214-4D0B-A9F8-5CBB1EF2BCA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mediaspot.IntegrationTests", "tests\Mediaspot.IntegrationTests\Mediaspot.IntegrationTests.csproj", "{459652FC-3836-440B-92B8-D8F335908F44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{6D4A091F-C214-4D0B-A9F8-5CBB1EF2BCA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D4A091F-C214-4D0B-A9F8-5CBB1EF2BCA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D4A091F-C214-4D0B-A9F8-5CBB1EF2BCA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459652FC-3836-440B-92B8-D8F335908F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459652FC-3836-440B-92B8-D8F335908F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459652FC-3836-440B-92B8-D8F335908F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459652FC-3836-440B-92B8-D8F335908F44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{79414CFB-BE20-4557-AD03-50E3EF998F79} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{491AAF6C-1AC5-4E15-88B6-3DCECF5DAD4B} = {DC28B4C6-BB24-4B0C-875F-D7FDAFA6131B}
 		{6D4A091F-C214-4D0B-A9F8-5CBB1EF2BCA1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{459652FC-3836-440B-92B8-D8F335908F44} = {DC28B4C6-BB24-4B0C-875F-D7FDAFA6131B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACBF7A55-F162-4602-A6B7-F0389A03CCAD}

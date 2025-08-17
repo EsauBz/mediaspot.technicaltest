@@ -1,8 +1,9 @@
 using Mediaspot.Application.Events;
 using Mediaspot.Application.Common;
 using Mediaspot.Domain.Assets.Events;
-using Mediaspot.Domain.Transcoding;
 using Moq;
+using Mediaspot.Application.Common.Queues;
+using Microsoft.Extensions.Logging;
 
 namespace Mediaspot.UnitTests;
 
@@ -11,16 +12,14 @@ public class TranscodeRequestedHandlerTests
     [Fact]
     public async Task Handle_Should_Add_TranscodeJob_And_Save()
     {
-        var repo = new Mock<ITranscodeJobRepository>();
-        var uow = new Mock<IUnitOfWork>();
-        repo.Setup(r => r.AddAsync(It.IsAny<TranscodeJob>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        uow.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-        var handler = new TranscodeRequestedHandler(repo.Object, uow.Object);
+        var queue = new Mock<ITranscodeQueue>();
+        queue.Setup(r => r.EnqueueAsync(It.IsAny<TranscodeJobRequest>())).Returns(ValueTask.CompletedTask);
+        var logger = new Mock<ILogger<TranscodeRequestedHandler>>();
+        var handler = new TranscodeRequestedHandler(queue.Object, logger.Object);
         var evt = new TranscodeRequested(Guid.NewGuid(), Guid.NewGuid(), "preset");
 
         await handler.Handle(evt, CancellationToken.None);
 
-        repo.Verify(r => r.AddAsync(It.Is<TranscodeJob>(j => j.AssetId == evt.AssetId && j.MediaFileId == evt.MediaFileId && j.Preset == evt.TargetPreset), It.IsAny<CancellationToken>()), Times.Once);
-        uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        queue.Verify(r => r.EnqueueAsync(It.Is<TranscodeJobRequest>(j => j.AssetId == evt.AssetId && j.MediaFileId == evt.MediaFileId && j.Preset == evt.TargetPreset)), Times.Once);
     }
 }

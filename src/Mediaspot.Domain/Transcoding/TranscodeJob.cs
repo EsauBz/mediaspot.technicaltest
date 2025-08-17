@@ -31,6 +31,7 @@ public sealed class TranscodeJob : AggregateRoot
         Status = TranscodeStatus.Running;
         // 2. We created the event that the job has started.
         var enventJob = new TranscodeJobStarted(this.Id);
+        UpdatedAt = DateTime.UtcNow;
         // 3. We register in the list of domain events the new event.
         this.Raise(enventJob);
     }
@@ -38,9 +39,9 @@ public sealed class TranscodeJob : AggregateRoot
     public void MarkSucceeded()
     {
         // 1. We change the status to Succeeded
-        Status = TranscodeStatus.Running;
+        Status = TranscodeStatus.Succeeded;
         // 2. We created the event that the job has Succeeded.
-        var enventJob = new TranscodeJobStarted(this.Id);
+        var enventJob = new TranscodeJobSucceeded(this.Id);
         UpdatedAt = DateTime.UtcNow;
         // 3. We register in the list of domain events the new success.
         this.Raise(enventJob);
@@ -49,10 +50,10 @@ public sealed class TranscodeJob : AggregateRoot
     public void MarkFailed()
     {
         // 1. We change the status to Failed
-        Status = TranscodeStatus.Running;
+        Status = TranscodeStatus.Failed;
         UpdatedAt = DateTime.UtcNow;
         // 2. We created the event that described the job as Failed.
-        var enventJob = new TranscodeJobStarted(this.Id);
+        var enventJob = new TranscodeJobFailed(this.Id);
         UpdatedAt = DateTime.UtcNow;
         // 3. We register in the list of domain events the failed event.
         this.Raise(enventJob);
