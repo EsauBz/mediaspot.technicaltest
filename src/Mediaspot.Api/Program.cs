@@ -1,4 +1,5 @@
 using Mediaspot.API.Endpoints;
+using Mediaspot.Application.Common;
 using Mediaspot.Application.Common.Queues;
 using Mediaspot.Infrastructure;
 using Mediaspot.Infrastructure.Persistence;
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<TranscodeJobWorker>();
 builder.Services.AddInfrastructure("Mediaspot.Backend.TechnicalTest");
 builder.Services.AddSingleton<ITranscodeQueue, InMemoryTranscodeQueue>();
+builder.Services.AddSingleton<ITaskDelayer, TaskDelayer>();
 
 var app = builder.Build();
 

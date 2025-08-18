@@ -1,8 +1,7 @@
 using Mediaspot.Api.DTOs;
-using Mediaspot.Domain.Titles;
-using Mediaspot.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Mediaspot.Application.Titles.Commands.Create;
+using Mediaspot.Application.Titles.Queries;
+using MediatR;
 
 namespace Mediaspot.API.Endpoints
 {
@@ -13,39 +12,35 @@ namespace Mediaspot.API.Endpoints
             var group = app.MapGroup("/api/titles").WithTags("Titles");
 
             // POST /api/titles
-            group.MapPost("/", async ([FromBody] CreateTitleRequest request, MediaspotDbContext context) =>
+            group.MapPost("/", async (CreateTitleRequest request, ISender sender) =>
             {
-                var nameExists = await context.Titles.AnyAsync(t => t.Name == request.Name);
-                if (nameExists)
-                {
-                    return Results.Conflict("A title with the same name already exists.");
-                }
+                // 1. Create the command from the incoming request data.
+                var command = new CreateTitleCommand(
+                    request.Name,
+                    request.Description,
+                    request.ReleaseDate,
+                    request.Type
+                );
 
-                if (!Enum.IsDefined(typeof(TitleType), request.Type))
-                {
-                    return Results.BadRequest($"The value '{request.Type}' is not a valid title type.");
-                }
+                // 2. Send the command to MediatR. MediatR will find the correct handler and execute it.
+                var titleId = await sender.Send(command);
 
-                var newTitle = new Title(request.Name, request.Description, request.ReleaseDate, request.Type);
-
-                context.Titles.Add(newTitle);
-                await context.SaveChangesAsync();
-
-                return Results.CreatedAtRoute("GetTitleById", new { id = newTitle.Id }, newTitle);
+                // 3. Return the 201 Created response.
+                return Results.CreatedAtRoute("GetTitleById", new { id = titleId }, new { id = titleId });
             });
 
             // GET /api/titles/{id}
-            group.MapGet("/{id:guid}", async (Guid id, MediaspotDbContext context) =>
+            group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
             {
-                var title = await context.Titles.FindAsync(id);
+                var title = await sender.Send(new GetTitleByIdQuery(id));
                 return title is not null ? Results.Ok(title) : Results.NotFound();
             })
-            .WithName("GetTitleById"); // Le damos un nombre para usarlo en CreatedAtRoute
+            .WithName("GetTitleById");
 
             // GET /api/titles
-            group.MapGet("/", async (MediaspotDbContext context) =>
+            group.MapGet("/", async (ISender sender) =>
             {
-                var titles = await context.Titles.ToListAsync();
+                var titles = await sender.Send(new GetAllTitlesQuery());
                 return Results.Ok(titles);
             });
 

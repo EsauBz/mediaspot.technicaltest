@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Mediaspot.Worker\Mediaspot.Worker.csproj" />
     <ProjectReference Include="..\..\src\Mediaspot.Domain\Mediaspot.Domain.csproj" />
     <ProjectReference Include="..\..\src\Mediaspot.Application\Mediaspot.Application.csproj" />
   </ItemGroup>

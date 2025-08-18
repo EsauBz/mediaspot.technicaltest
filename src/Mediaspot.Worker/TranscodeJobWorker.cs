@@ -19,7 +19,8 @@ namespace Mediaspot.Worker;
 public class TranscodeJobWorker(
     IServiceProvider serviceProvider,
     ITranscodeQueue queue,
-    ILogger<TranscodeJobWorker> logger)
+    ILogger<TranscodeJobWorker> logger,
+    ITaskDelayer taskDelayer)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,7 +48,7 @@ public class TranscodeJobWorker(
                 await sender.Send(new StartTranscodeJobCommand(job.Id), stoppingToken);
                 logger.LogInformation("Job {JobId} marked as Running.", job.Id);
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                await taskDelayer.Delay(TimeSpan.FromSeconds(10), stoppingToken);
 
                 await sender.Send(new CompleteTranscodeJobCommand(job.Id), stoppingToken);
                 logger.LogInformation("Job: {JobId} mark as Succeeded.", job.Id);
