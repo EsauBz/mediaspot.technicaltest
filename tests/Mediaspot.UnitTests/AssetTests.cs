@@ -11,30 +11,46 @@ public class AssetTests
     public void Constructor_Should_Set_Properties_And_Raise_AssetCreated()
     {
         var metadata = new Metadata("title", "desc", "en");
-        var asset = new Asset("ext-1", metadata);
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
 
         asset.ExternalId.ShouldBe("ext-1");
         asset.Metadata.ShouldBe(metadata);
+        asset.Duration.ShouldBe(duration);
+        asset.FrameRate.ShouldBe(frameRate);
+        asset.Codec.ShouldBe(codec);
         asset.DomainEvents.OfType<AssetCreated>().Any(ac => ac.AssetId == asset.Id).ShouldBeTrue();
     }
 
     [Fact]
     public void RegisterMediaFile_Should_Add_File_And_Raise_Event()
     {
-        var asset = new Asset("ext-2", new Metadata("t", null, null));
-        var path = new FilePath("/file.mp4");
         var duration = Duration.FromSeconds(10);
+        var bitrate = 320;
+        var sampleRate = 44100;
+        var channels = 2;
+        var path = new FilePath("/file.mp3");
+        var asset = new AudioAsset("ext-2", new Metadata("t", null, null), duration, bitrate, sampleRate, channels);
 
         var mf = asset.RegisterMediaFile(path, duration);
 
         asset.MediaFiles.ShouldContain(mf);
+        asset.Bitrate.ShouldBe(bitrate);
+        asset.SampleRate.ShouldBe(sampleRate);
+        asset.Channels.ShouldBe(channels);
         asset.DomainEvents.OfType<MediaFileRegistered>().Any(reg => reg.AssetId == asset.Id && reg.MediaFileId == mf.Id.Value).ShouldBeTrue();
     }
 
     [Fact]
     public void UpdateMetadata_Should_Set_Metadata_And_Raise_Event()
     {
-        var asset = new Asset("ext-3", new Metadata("t", null, null));
+        var metadata = new Metadata("title", "desc", "en");
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
         var newMeta = new Metadata("new", "d", "fr");
 
         asset.UpdateMetadata(newMeta);
@@ -46,7 +62,11 @@ public class AssetTests
     [Fact]
     public void UpdateMetadata_Should_Throw_If_Title_Empty()
     {
-        var asset = new Asset("ext-4", new Metadata("t", null, null));
+        var metadata = new Metadata("title", "desc", "en");
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
         var invalid = new Metadata("", null, null);
 
         Should.Throw<ArgumentException>(() => asset.UpdateMetadata(invalid));
@@ -55,7 +75,11 @@ public class AssetTests
     [Fact]
     public void Archive_Should_Set_Archived_And_Raise_Event()
     {
-        var asset = new Asset("ext-5", new Metadata("t", null, null));
+        var metadata = new Metadata("title", "desc", "en");
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
         asset.Archive(_ => false);
 
         asset.Archived.ShouldBeTrue();
@@ -65,14 +89,22 @@ public class AssetTests
     [Fact]
     public void Archive_Should_Throw_If_ActiveJobs()
     {
-        var asset = new Asset("ext-6", new Metadata("t", null, null));
+        var metadata = new Metadata("title", "desc", "en");
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
         Should.Throw<InvalidOperationException>(() => asset.Archive(_ => true));
     }
 
     [Fact]
     public void Archive_Should_Be_Idempotent()
     {
-        var asset = new Asset("ext-7", new Metadata("t", null, null));
+        var metadata = new Metadata("title", "desc", "en");
+        var duration = Duration.FromSeconds(120);
+        var frameRate = 30.0f;
+        var codec = "H.264";
+        var asset = new VideoAsset("ext-1", metadata, duration, "1920x1080", frameRate, codec);
         asset.Archive(_ => false);
         asset.Archive(_ => false);
         asset.Archived.ShouldBeTrue();

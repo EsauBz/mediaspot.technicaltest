@@ -48,6 +48,30 @@ public sealed class MediaspotDbContext(DbContextOptions<MediaspotDbContext> opti
 
             b.Property<bool>("Archived").HasField("<Archived>k__BackingField");
             b.HasIndex(a => a.ExternalId).IsUnique();
+
+            b.HasDiscriminator<string>("AssetType")
+            .HasValue<VideoAsset>("video")
+            .HasValue<AudioAsset>("audio");
+        });
+
+        modelBuilder.Entity<VideoAsset>(b =>
+        {
+            // Duration property
+            b.Property(va => va.Duration)
+            .HasConversion(
+                duration => duration.Value.TotalSeconds,
+                seconds => new Duration(TimeSpan.FromSeconds(seconds))
+            );
+        });
+
+        modelBuilder.Entity<AudioAsset>(b =>
+        {
+            // Duration property
+            b.Property(aa => aa.Duration)
+            .HasConversion(
+                duration => duration.Value.TotalSeconds,
+                seconds => new Duration(TimeSpan.FromSeconds(seconds))
+            );
         });
 
         modelBuilder.Entity<TranscodeJob>(b =>
@@ -59,18 +83,18 @@ public sealed class MediaspotDbContext(DbContextOptions<MediaspotDbContext> opti
         });
 
         modelBuilder.Entity<Title>(b =>
-    {
-        // Primary key
-        b.HasKey(t => t.Id);
+        {
+            // Primary key
+            b.HasKey(t => t.Id);
 
-        // Properties
-        b.Property(t => t.Name).IsRequired();
-        b.Property(t => t.Description);
-        b.Property(t => t.Type).IsRequired();
-        b.Property(t => t.ReleaseDate).IsRequired();
+            // Properties
+            b.Property(t => t.Name).IsRequired();
+            b.Property(t => t.Description);
+            b.Property(t => t.Type).IsRequired();
+            b.Property(t => t.ReleaseDate).IsRequired();
 
-        // Business Rule: Name has to be unique
-        b.HasIndex(t => t.Name).IsUnique();
-    });
+            // Business Rule: Name has to be unique
+            b.HasIndex(t => t.Name).IsUnique();
+        });
     }
 }

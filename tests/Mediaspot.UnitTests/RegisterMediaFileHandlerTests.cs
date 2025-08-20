@@ -12,7 +12,7 @@ public class RegisterMediaFileHandlerTests
     [Fact]
     public async Task Handle_Should_Register_MediaFile_And_Save()
     {
-        var asset = new Asset("ext", new Metadata("t", null, null));
+        var asset = new AudioAsset("ext", new Metadata("t", null, null), Duration.FromSeconds(1300), 180, 60, 3);
         var repo = new Mock<IAssetRepository>();
         var uow = new Mock<IUnitOfWork>();
         repo.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(asset);

@@ -10,7 +10,6 @@ namespace Mediaspot.API.Endpoints
 {
     public static class AssetEndpoints
     {
-        // Este es un método de extensión para IEndpointRouteBuilder (el 'app')
         public static IEndpointRouteBuilder MapAssetEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/assets");
@@ -23,7 +22,40 @@ namespace Mediaspot.API.Endpoints
             .WithName("GetAssetById")
             .WithOpenApi();
 
-            app.MapPost("/assets", async (CreateAssetCommand cmd, ISender sender) => Results.Created("/assets", new { id = await sender.Send(cmd) }))
+            app.MapPost("/assets", async (CreateAssetCommand request, ISender sender, ILogger<Program> logger) =>
+            {
+                var command = new CreateAssetCommand(
+                    request.ExternalId,
+                    request.Title,
+                    request.Description,
+                    request.Language,
+                    request.Type,
+                    request.DurationSeconds,
+                    request.Resolution,
+                    request.FrameRate,
+                    request.Codec,
+                    request.Bitrate,
+                    request.SampleRate,
+                    request.Channels
+                );
+                logger.LogInformation("Creating asset with ExternalId: {ExternalId}", request.ExternalId);
+
+                try
+                {
+                    var assetId = await sender.Send(command);
+                    return Results.Created($"/assets/{assetId}", new { id = assetId });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    logger.LogWarning("--> Conflict in creating asset: {ErrorMessage}", ex.Message);
+                    return Results.Conflict(new { message = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "--> Inexpected error creating Asset.");
+                    return Results.Problem("An unexpected error occurred.");
+                }
+            })
                 .WithName("PostCreateAsset")
                 .WithOpenApi();
 

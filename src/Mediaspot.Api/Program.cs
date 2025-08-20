@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<TranscodeJobWorker>();
 builder.Services.AddInfrastructure("Mediaspot.Backend.TechnicalTest");
+builder.Services.AddHostedService<TranscodeJobWorker>();
 builder.Services.AddSingleton<ITranscodeQueue, InMemoryTranscodeQueue>();
 builder.Services.AddSingleton<ITaskDelayer, TaskDelayer>();
 

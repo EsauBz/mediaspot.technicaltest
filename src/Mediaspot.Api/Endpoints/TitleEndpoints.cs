@@ -27,7 +27,9 @@ namespace Mediaspot.API.Endpoints
 
                 // 3. Return the 201 Created response.
                 return Results.CreatedAtRoute("GetTitleById", new { id = titleId }, new { id = titleId });
-            });
+            })
+            .WithName("PostCreateTitle")
+            .WithOpenApi();
 
             // GET /api/titles/{id}
             group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
@@ -35,14 +37,17 @@ namespace Mediaspot.API.Endpoints
                 var title = await sender.Send(new GetTitleByIdQuery(id));
                 return title is not null ? Results.Ok(title) : Results.NotFound();
             })
-            .WithName("GetTitleById");
+            .WithName("GetTitleById")
+            .WithOpenApi();
 
             // GET /api/titles
             group.MapGet("/", async (ISender sender) =>
             {
                 var titles = await sender.Send(new GetAllTitlesQuery());
                 return Results.Ok(titles);
-            });
+            })
+            .WithName("GetAllTitles")
+            .WithOpenApi();
 
             return app;
         }

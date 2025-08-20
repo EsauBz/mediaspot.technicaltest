@@ -12,7 +12,7 @@ public class ArchiveAssetHandlerTests
     [Fact]
     public async Task Handle_Should_Archive_Asset_And_Save()
     {
-        var asset = new Asset("ext", new Metadata("t", null, null));
+        var asset = new VideoAsset("ext", new Metadata("t", null, null), Duration.FromSeconds(100), "1920x1080", 30.0f, "H.264");
         var repo = new Mock<IAssetRepository>();
         var jobs = new Mock<ITranscodeJobRepository>();
         var uow = new Mock<IUnitOfWork>();
@@ -44,7 +44,7 @@ public class ArchiveAssetHandlerTests
     [Fact]
     public async Task Handle_Should_Throw_If_ActiveJobs()
     {
-        var asset = new Asset("ext", new Metadata("t", null, null));
+        var asset = new VideoAsset("ext", new Metadata("t", null, null), Duration.FromSeconds(100), "1920x1080", 30.0f, "H.264");
         var repo = new Mock<IAssetRepository>();
         var jobs = new Mock<ITranscodeJobRepository>();
         var uow = new Mock<IUnitOfWork>();
